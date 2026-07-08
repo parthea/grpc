@@ -59,15 +59,11 @@ def grpc_deps():
     if "com_google_protobuf" not in native.existing_rules():
         http_archive(
             name = "com_google_protobuf",
-            strip_prefix = "protobuf-35cd01f9fe9afbeea38cc7b979a3b6bfcde82c03",
+            sha256 = "22775f9376938295efa2d59a59bde4cd075a42df5a9b4d27aa9b99fa6a413bd2",
+            strip_prefix = "protobuf-35.1",
             urls = [
-                "https://storage.googleapis.com/grpc-bazel-mirror/github.com/protocolbuffers/protobuf/archive/35cd01f9fe9afbeea38cc7b979a3b6bfcde82c03.tar.gz",
-                "https://github.com/protocolbuffers/protobuf/archive/35cd01f9fe9afbeea38cc7b979a3b6bfcde82c03.tar.gz",
+                "https://github.com/protocolbuffers/protobuf/archive/refs/tags/v35.1.tar.gz",
             ],
-            patches = [
-                "@com_github_grpc_grpc//third_party:protobuf.patch",
-            ],
-            patch_args = ["-p1"],
             repo_mapping = {
                 "@abseil-cpp": "@com_google_absl",
                 "@googletest": "@com_google_googletest",
