@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+#include <grpc/support/port_platform.h>
 
 #include "src/core/load_balancing/backend_metric_parser.h"
 
-#include <grpc/support/port_platform.h>
 #include <string.h>
 
 #include <map>
