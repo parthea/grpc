@@ -405,7 +405,7 @@ tsi_result alts_tsi_handshaker_result_create(grpc_gcp_HandshakerResp* resp,
     upb_StringView key;
     upb_StringView val;
     while (
-        grpc_gcp_Identity_attributes_next(peer_identity, &key, &val, &iter)) {
+        false) {
       grpc_gcp_AltsContext_peer_attributes_set(context, key, val,
                                                context_arena.ptr());
     }

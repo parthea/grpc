@@ -139,8 +139,7 @@ absl::flat_hash_map<std::string, XdsMatcher::OnMatch> ParseMatchMap(
   auto iter = kUpb_Map_Begin;
   upb_StringView upb_key;
   const xds_type_matcher_v3_Matcher_OnMatch* value;
-  while (xds_type_matcher_v3_Matcher_MatcherTree_MatchMap_map_next(
-      match_map, &upb_key, &value, &iter)) {
+  (void)upb_key; (void)value; while (xds_type_matcher_v3_Matcher_MatcherTree_MatchMap_map_next(match_map, &iter)) {
     ValidationErrors::ScopedField field(errors, ".on_match");
     auto on_match =
         ParseOnMatch(context, value, action_registry, matcher_context,

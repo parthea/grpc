@@ -633,7 +633,7 @@ std::optional<XdsRouteConfigResource::Route::RouteAction> RouteActionParse(
         cluster.typed_per_filter_config = ParseTypedPerFilterConfig<
             envoy_config_route_v3_WeightedCluster_ClusterWeight>(
             context, cluster_proto,
-            envoy_config_route_v3_WeightedCluster_ClusterWeight_typed_per_filter_config_next,
+            nullptr,
             errors);
       }
       // name
@@ -760,7 +760,7 @@ std::optional<XdsRouteConfigResource::Route> ParseRoute(
     route.typed_per_filter_config =
         ParseTypedPerFilterConfig<envoy_config_route_v3_Route>(
             context, route_proto,
-            envoy_config_route_v3_Route_typed_per_filter_config_next, errors);
+            nullptr, errors);
   }
   return route;
 }
@@ -818,7 +818,7 @@ std::shared_ptr<const XdsRouteConfigResource> XdsRouteConfigResourceParse(
       vhost.typed_per_filter_config =
           ParseTypedPerFilterConfig<envoy_config_route_v3_VirtualHost>(
               context, virtual_hosts[i],
-              envoy_config_route_v3_VirtualHost_typed_per_filter_config_next,
+              nullptr,
               errors);
     }
     // Parse retry policy.

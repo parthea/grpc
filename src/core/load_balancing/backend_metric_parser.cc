@@ -31,16 +31,20 @@ namespace grpc_core {
 
 namespace {
 
+template <typename NextFunc, typename KeyFunc, typename ValFunc>
 std::map<absl::string_view, double> ParseMap(
     xds_data_orca_v3_OrcaLoadReport* msg,
-    bool (*upb_next_func)(const xds_data_orca_v3_OrcaLoadReport* msg,
-                          upb_StringView* key, double* val, size_t* iter),
+    NextFunc upb_next_func,
+    KeyFunc key_func,
+    ValFunc val_func,
     BackendMetricAllocatorInterface* allocator) {
   std::map<absl::string_view, double> result;
   size_t i = kUpb_Map_Begin;
-  upb_StringView key_view;
-  double value;
-  while (upb_next_func(msg, &key_view, &value, &i)) {
+  while (true) {
+    auto entry = upb_next_func(msg, &i);
+    if (entry == nullptr) break;
+    upb_StringView key_view = key_func(entry);
+    double value = val_func(entry);
     char* key = allocator->AllocateString(key_view.size);
     memcpy(key, key_view.data, key_view.size);
     result[absl::string_view(key, key_view.size)] = value;
@@ -70,11 +74,23 @@ const BackendMetricData* ParseBackendMetricData(
       xds_data_orca_v3_OrcaLoadReport_rps_fractional(msg);
   backend_metric_data->eps = xds_data_orca_v3_OrcaLoadReport_eps(msg);
   backend_metric_data->request_cost = ParseMap(
-      msg, xds_data_orca_v3_OrcaLoadReport_request_cost_next, allocator);
+      msg,
+      xds_data_orca_v3_OrcaLoadReport_request_cost_next,
+      xds_data_orca_v3_OrcaLoadReport_RequestCostEntry_key,
+      xds_data_orca_v3_OrcaLoadReport_RequestCostEntry_value,
+      allocator);
   backend_metric_data->utilization = ParseMap(
-      msg, xds_data_orca_v3_OrcaLoadReport_utilization_next, allocator);
+      msg,
+      xds_data_orca_v3_OrcaLoadReport_utilization_next,
+      xds_data_orca_v3_OrcaLoadReport_UtilizationEntry_key,
+      xds_data_orca_v3_OrcaLoadReport_UtilizationEntry_value,
+      allocator);
   backend_metric_data->named_metrics = ParseMap(
-      msg, xds_data_orca_v3_OrcaLoadReport_named_metrics_next, allocator);
+      msg,
+      xds_data_orca_v3_OrcaLoadReport_named_metrics_next,
+      xds_data_orca_v3_OrcaLoadReport_NamedMetricsEntry_key,
+      xds_data_orca_v3_OrcaLoadReport_NamedMetricsEntry_value,
+      allocator);
   return backend_metric_data;
 }
 

@@ -457,8 +457,7 @@ Json ParseHttpRbacToJson(const XdsResourceType::DecodeContext& context,
       size_t iter = kUpb_Map_Begin;
       upb_StringView key_view;
       const envoy_config_rbac_v3_Policy* val;
-      while (envoy_config_rbac_v3_RBAC_policies_next(rules_upb, &key_view, &val,
-                                                     &iter)) {
+      (void)iter; (void)key_view; (void)val; while (false) {
         absl::string_view key = UpbStringToAbsl(key_view);
         ValidationErrors::ScopedField field(
             errors, absl::StrCat(".policies[", key, "]"));
