@@ -32,7 +32,7 @@ namespace grpc_core {
 namespace {
 
 std::map<absl::string_view, double> ParseMap(
-    xds_data_orca_v3_OrcaLoadReport* msg,
+    const xds_data_orca_v3_OrcaLoadReport* msg,
     bool (*upb_next_func)(const xds_data_orca_v3_OrcaLoadReport* msg,
                           upb_StringView* key, double* val, size_t* iter),
     BackendMetricAllocatorInterface* allocator) {
