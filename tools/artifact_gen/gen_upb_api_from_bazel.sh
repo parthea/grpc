@@ -79,9 +79,40 @@ if [[ -n "${BUILD_TARGETS}" ]]; then
   "${BAZEL_BUILD[@]}" ${BUILD_TARGETS}
 fi
 
-# Run the C++ program to copy the generated files.
-${TMP_DIR}/gen_upb_api_from_bazel \
-  --mode=generate_and_copy \
-  --upb_rules_xml="${UPB_RULES_XML}" \
-  --deps_xml="${DEPS_XML}" \
-  "$@"
+# -----------------------------------------------------------------------------
+# STEP 3: Dynamically sync and mirror all generated external UPB namespaces
+# -----------------------------------------------------------------------------
+# Finds all compiled UPB files inside external repositories and mirrors them
+# directly to their corresponding subdirectories inside the checked-in upb-gen tree.
+# -----------------------------------------------------------------------------
+UPB_OUT="${UPB_OUTPUT_DIR:-src/core/ext/upb-gen}"
+UPBDEFS_OUT="${UPBDEFS_OUTPUT_DIR:-src/core/ext/upbdefs-gen}"
+
+if [ -d "bazel-bin/external" ] || [ -d "bazel-out" ]; then
+  # Strictly search for header and source extension upb files to avoid .so permission issues
+  find bazel-bin/external bazel-out/ -type f -path "*/external/*" \( -name "*.upb.h" -o -name "*.upb.c" -o -name "*.upbdefs.h" -o -name "*.upbdefs.c" \) 2>/dev/null | while read -r src_file; do
+    # Extract the part after "external/" (e.g., "xds+/xds/data/orca/v3/orca_load_report.upb.h")
+    ext_suffix="${src_file#*external/}"
+    
+    # Strip the first directory component (the dynamic Bzlmod repo name, e.g., "xds+")
+    # Result: "xds/data/orca/v3/orca_load_report.upb.h"
+    mapped_path=$(echo "${ext_suffix}" | cut -d'/' -f2-)
+    
+    # Only copy folders starting with xds/ or envoy/ to avoid polluting the tree
+    if [[ "${mapped_path}" == xds/* ]] || [[ "${mapped_path}" == envoy/* ]]; then
+      # Route upbdefs files to the upbdefs-gen folder, and others to the upb-gen folder
+      if [[ "${mapped_path}" == *upbdefs* ]]; then
+        dest_file="${UPBDEFS_OUT}/${mapped_path}"
+      else
+        dest_file="${UPB_OUT}/${mapped_path}"
+      fi
+      
+      mkdir -p "$(dirname "${dest_file}")"
+      
+      # Clean overwrite sequence: remove existing read-only file, copy, then grant strict 644 permissions
+      rm -f "${dest_file}"
+      cp "${src_file}" "${dest_file}"
+      chmod 644 "${dest_file}"
+    fi
+  done
+fi

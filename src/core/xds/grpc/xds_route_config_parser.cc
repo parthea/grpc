@@ -285,8 +285,7 @@ void RouteRuntimeFractionParse(const envoy_config_route_v3_RouteMatch* match,
 template <typename ParentType, typename NextFunc>
 XdsRouteConfigResource::TypedPerFilterConfig ParseTypedPerFilterConfig(
     const XdsResourceType::DecodeContext& context, const ParentType* parent,
-    NextFunc upb_next_func,
-    ValidationErrors* errors) {
+    NextFunc upb_next_func, ValidationErrors* errors) {
   XdsRouteConfigResource::TypedPerFilterConfig typed_per_filter_config;
   size_t filter_it = kUpb_Map_Begin;
   upb_StringView key_view;

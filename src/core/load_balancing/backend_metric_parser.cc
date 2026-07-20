@@ -34,8 +34,7 @@ namespace {
 
 template <typename NextFunc>
 std::map<absl::string_view, double> ParseMap(
-    xds_data_orca_v3_OrcaLoadReport* msg,
-    NextFunc upb_next_func,
+    xds_data_orca_v3_OrcaLoadReport* msg, NextFunc upb_next_func,
     BackendMetricAllocatorInterface* allocator) {
   std::map<absl::string_view, double> result;
   size_t i = kUpb_Map_Begin;
