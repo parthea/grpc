@@ -90,8 +90,7 @@ AltsContext::AltsContext(const grpc_gcp_AltsContext* ctx) {
     grpc_gcp_AltsContext* ctx_upb = (grpc_gcp_AltsContext*)ctx;
     while (const auto* entry =
                grpc_gcp_AltsContext_peer_attributes_next(ctx_upb, &iter)) {
-      upb_StringView key =
-          grpc_gcp_AltsContext_PeerAttributesEntry_key(entry);
+      upb_StringView key = grpc_gcp_AltsContext_PeerAttributesEntry_key(entry);
       upb_StringView val =
           grpc_gcp_AltsContext_PeerAttributesEntry_value(entry);
       peer_attributes_map_[std::string(key.data, key.size)] =

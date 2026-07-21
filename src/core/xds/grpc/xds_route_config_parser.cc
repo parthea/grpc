@@ -289,10 +289,8 @@ inline upb_StringView GetTypedPerFilterConfigEntryKey(
       entry);
 }
 inline upb_StringView GetTypedPerFilterConfigEntryKey(
-    const envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry*
-        entry) {
-  return envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry_key(
-      entry);
+    const envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry* entry) {
+  return envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry_key(entry);
 }
 inline upb_StringView GetTypedPerFilterConfigEntryKey(
     const envoy_config_route_v3_Route_TypedPerFilterConfigEntry* entry) {
@@ -312,8 +310,7 @@ inline const struct google_protobuf_Any* GetTypedPerFilterConfigEntryValue(
       entry);
 }
 inline const struct google_protobuf_Any* GetTypedPerFilterConfigEntryValue(
-    const envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry*
-        entry) {
+    const envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry* entry) {
   return envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry_value(
       entry);
 }

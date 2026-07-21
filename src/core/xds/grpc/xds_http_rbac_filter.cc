@@ -454,8 +454,8 @@ Json ParseHttpRbacToJson(const XdsResourceType::DecodeContext& context,
       Json::Object policies_object;
       envoy_config_rbac_v3_RBAC* rules_upb = (envoy_config_rbac_v3_RBAC*)rules;
       size_t iter = kUpb_Map_Begin;
-      while (const auto* entry = envoy_config_rbac_v3_RBAC_policies_next(
-                 rules_upb, &iter)) {
+      while (const auto* entry =
+                 envoy_config_rbac_v3_RBAC_policies_next(rules_upb, &iter)) {
         upb_StringView key_view =
             envoy_config_rbac_v3_RBAC_PoliciesEntry_key(entry);
         const envoy_config_rbac_v3_Policy* val =
