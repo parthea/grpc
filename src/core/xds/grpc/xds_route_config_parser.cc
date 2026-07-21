@@ -282,17 +282,62 @@ void RouteRuntimeFractionParse(const envoy_config_route_v3_RouteMatch* match,
   }
 }
 
-template <typename ParentType>
+inline upb_StringView GetTypedPerFilterConfigEntryKey(
+    const envoy_config_route_v3_RouteConfiguration_TypedPerFilterConfigEntry*
+        entry) {
+  return envoy_config_route_v3_RouteConfiguration_TypedPerFilterConfigEntry_key(
+      entry);
+}
+inline upb_StringView GetTypedPerFilterConfigEntryKey(
+    const envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry*
+        entry) {
+  return envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry_key(
+      entry);
+}
+inline upb_StringView GetTypedPerFilterConfigEntryKey(
+    const envoy_config_route_v3_Route_TypedPerFilterConfigEntry* entry) {
+  return envoy_config_route_v3_Route_TypedPerFilterConfigEntry_key(entry);
+}
+inline upb_StringView GetTypedPerFilterConfigEntryKey(
+    const envoy_config_route_v3_WeightedCluster_ClusterWeight_TypedPerFilterConfigEntry*
+        entry) {
+  return envoy_config_route_v3_WeightedCluster_ClusterWeight_TypedPerFilterConfigEntry_key(
+      entry);
+}
+
+inline const struct google_protobuf_Any* GetTypedPerFilterConfigEntryValue(
+    const envoy_config_route_v3_RouteConfiguration_TypedPerFilterConfigEntry*
+        entry) {
+  return envoy_config_route_v3_RouteConfiguration_TypedPerFilterConfigEntry_value(
+      entry);
+}
+inline const struct google_protobuf_Any* GetTypedPerFilterConfigEntryValue(
+    const envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry*
+        entry) {
+  return envoy_config_route_v3_VirtualHost_TypedPerFilterConfigEntry_value(
+      entry);
+}
+inline const struct google_protobuf_Any* GetTypedPerFilterConfigEntryValue(
+    const envoy_config_route_v3_Route_TypedPerFilterConfigEntry* entry) {
+  return envoy_config_route_v3_Route_TypedPerFilterConfigEntry_value(entry);
+}
+inline const struct google_protobuf_Any* GetTypedPerFilterConfigEntryValue(
+    const envoy_config_route_v3_WeightedCluster_ClusterWeight_TypedPerFilterConfigEntry*
+        entry) {
+  return envoy_config_route_v3_WeightedCluster_ClusterWeight_TypedPerFilterConfigEntry_value(
+      entry);
+}
+
+template <typename ParentType, typename NextFunc>
 XdsRouteConfigResource::TypedPerFilterConfig ParseTypedPerFilterConfig(
     const XdsResourceType::DecodeContext& context, const ParentType* parent,
-    bool (*upb_next_func)(const ParentType*, upb_StringView*,
-                          const struct google_protobuf_Any**, size_t* iter),
-    ValidationErrors* errors) {
+    NextFunc upb_next_func, ValidationErrors* errors) {
   XdsRouteConfigResource::TypedPerFilterConfig typed_per_filter_config;
   size_t filter_it = kUpb_Map_Begin;
-  upb_StringView key_view;
-  const struct google_protobuf_Any* any;
-  while (upb_next_func(parent, &key_view, &any, &filter_it)) {
+  while (const auto* entry = upb_next_func(parent, &filter_it)) {
+    upb_StringView key_view = GetTypedPerFilterConfigEntryKey(entry);
+    const struct google_protobuf_Any* any =
+        GetTypedPerFilterConfigEntryValue(entry);
     absl::string_view key = UpbStringToAbsl(key_view);
     ValidationErrors::ScopedField field(errors, absl::StrCat("[", key, "]"));
     if (key.empty()) errors->AddError("filter name must be non-empty");

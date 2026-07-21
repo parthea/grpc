@@ -401,11 +401,10 @@ tsi_result alts_tsi_handshaker_result_create(grpc_gcp_HandshakerResp* resp,
     return TSI_FAILED_PRECONDITION;
   }
   if (grpc_gcp_Identity_attributes_size(identity) != 0) {
-    size_t iter = kUpb_Map_Begin;
-    upb_StringView key;
-    upb_StringView val;
-    while (
-        grpc_gcp_Identity_attributes_next(peer_identity, &key, &val, &iter)) {
+    while (const auto* entry =
+               grpc_gcp_Identity_attributes_next(peer_identity, &iter)) {
+      upb_StringView key = grpc_gcp_Identity_AttributesEntry_key(entry);
+      upb_StringView val = grpc_gcp_Identity_AttributesEntry_value(entry);
       grpc_gcp_AltsContext_peer_attributes_set(context, key, val,
                                                context_arena.ptr());
     }

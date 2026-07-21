@@ -454,10 +454,12 @@ Json ParseHttpRbacToJson(const XdsResourceType::DecodeContext& context,
       Json::Object policies_object;
       envoy_config_rbac_v3_RBAC* rules_upb = (envoy_config_rbac_v3_RBAC*)rules;
       size_t iter = kUpb_Map_Begin;
-      upb_StringView key_view;
-      const envoy_config_rbac_v3_Policy* val;
-      while (envoy_config_rbac_v3_RBAC_policies_next(rules_upb, &key_view, &val,
-                                                     &iter)) {
+      while (const auto* entry = envoy_config_rbac_v3_RBAC_policies_next(
+                 rules_upb, &iter)) {
+        upb_StringView key_view =
+            envoy_config_rbac_v3_RBAC_PoliciesEntry_key(entry);
+        const envoy_config_rbac_v3_Policy* val =
+            envoy_config_rbac_v3_RBAC_PoliciesEntry_value(entry);
         absl::string_view key = UpbStringToAbsl(key_view);
         ValidationErrors::ScopedField field(
             errors, absl::StrCat(".policies[", key, "]"));
@@ -881,10 +883,12 @@ Rbac ParseXdsRbac(const XdsResourceType::DecodeContext& context,
   // policies
   if (envoy_config_rbac_v3_RBAC_policies_size(rules) != 0) {
     size_t iter = kUpb_Map_Begin;
-    upb_StringView key_view;
-    const envoy_config_rbac_v3_Policy* val;
-    while (envoy_config_rbac_v3_RBAC_policies_next(rules, &key_view, &val,
-                                                   &iter)) {
+    while (const auto* entry =
+               envoy_config_rbac_v3_RBAC_policies_next(rules, &iter)) {
+      upb_StringView key_view =
+          envoy_config_rbac_v3_RBAC_PoliciesEntry_key(entry);
+      const envoy_config_rbac_v3_Policy* val =
+          envoy_config_rbac_v3_RBAC_PoliciesEntry_value(entry);
       absl::string_view key = UpbStringToAbsl(key_view);
       ValidationErrors::ScopedField field(errors,
                                           absl::StrCat(".policies[", key, "]"));

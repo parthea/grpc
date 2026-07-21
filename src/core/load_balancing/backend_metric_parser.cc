@@ -31,16 +31,41 @@ namespace grpc_core {
 
 namespace {
 
+inline upb_StringView GetEntryKey(
+    const xds_data_orca_v3_OrcaLoadReport_RequestCostEntry* entry) {
+  return xds_data_orca_v3_OrcaLoadReport_RequestCostEntry_key(entry);
+}
+inline upb_StringView GetEntryKey(
+    const xds_data_orca_v3_OrcaLoadReport_UtilizationEntry* entry) {
+  return xds_data_orca_v3_OrcaLoadReport_UtilizationEntry_key(entry);
+}
+inline upb_StringView GetEntryKey(
+    const xds_data_orca_v3_OrcaLoadReport_NamedMetricsEntry* entry) {
+  return xds_data_orca_v3_OrcaLoadReport_NamedMetricsEntry_key(entry);
+}
+
+inline double GetEntryValue(
+    const xds_data_orca_v3_OrcaLoadReport_RequestCostEntry* entry) {
+  return xds_data_orca_v3_OrcaLoadReport_RequestCostEntry_value(entry);
+}
+inline double GetEntryValue(
+    const xds_data_orca_v3_OrcaLoadReport_UtilizationEntry* entry) {
+  return xds_data_orca_v3_OrcaLoadReport_UtilizationEntry_value(entry);
+}
+inline double GetEntryValue(
+    const xds_data_orca_v3_OrcaLoadReport_NamedMetricsEntry* entry) {
+  return xds_data_orca_v3_OrcaLoadReport_NamedMetricsEntry_value(entry);
+}
+
+template <typename NextFunc>
 std::map<absl::string_view, double> ParseMap(
-    xds_data_orca_v3_OrcaLoadReport* msg,
-    bool (*upb_next_func)(const xds_data_orca_v3_OrcaLoadReport* msg,
-                          upb_StringView* key, double* val, size_t* iter),
+    const xds_data_orca_v3_OrcaLoadReport* msg, NextFunc upb_next_func,
     BackendMetricAllocatorInterface* allocator) {
   std::map<absl::string_view, double> result;
   size_t i = kUpb_Map_Begin;
-  upb_StringView key_view;
-  double value;
-  while (upb_next_func(msg, &key_view, &value, &i)) {
+  while (const auto* entry = upb_next_func(msg, &i)) {
+    upb_StringView key_view = GetEntryKey(entry);
+    double value = GetEntryValue(entry);
     char* key = allocator->AllocateString(key_view.size);
     memcpy(key, key_view.data, key_view.size);
     result[absl::string_view(key, key_view.size)] = value;

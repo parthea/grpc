@@ -126,11 +126,13 @@ XdsMetadataMap ParseXdsMetadataMap(
   envoy_config_core_v3_Metadata* metadata_upb =
       (envoy_config_core_v3_Metadata*)metadata;
   size_t iter = kUpb_Map_Begin;
-  upb_StringView typed_filter_metadata_key_view;
-  const google_protobuf_Any* typed_filter_metadata_val;
-  while (envoy_config_core_v3_Metadata_typed_filter_metadata_next(
-      metadata_upb, &typed_filter_metadata_key_view, &typed_filter_metadata_val,
-      &iter)) {
+  while (const auto* entry =
+             envoy_config_core_v3_Metadata_typed_filter_metadata_next(
+                 metadata_upb, &iter)) {
+    upb_StringView typed_filter_metadata_key_view =
+        envoy_config_core_v3_Metadata_TypedFilterMetadataEntry_key(entry);
+    const google_protobuf_Any* typed_filter_metadata_val =
+        envoy_config_core_v3_Metadata_TypedFilterMetadataEntry_value(entry);
     absl::string_view key = UpbStringToAbsl(typed_filter_metadata_key_view);
     ValidationErrors::ScopedField field(
         errors, absl::StrCat(".typed_filter_metadata[", key, "]"));
@@ -153,10 +155,12 @@ XdsMetadataMap ParseXdsMetadataMap(
   }
   // Then, try filter_metadata.
   size_t iter2 = kUpb_Map_Begin;
-  upb_StringView filter_metadata_key_view;
-  const google_protobuf_Struct* filter_metadata_val;
-  while (envoy_config_core_v3_Metadata_filter_metadata_next(
-      metadata_upb, &filter_metadata_key_view, &filter_metadata_val, &iter2)) {
+  while (const auto* entry = envoy_config_core_v3_Metadata_filter_metadata_next(
+             metadata_upb, &iter2)) {
+    upb_StringView filter_metadata_key_view =
+        envoy_config_core_v3_Metadata_FilterMetadataEntry_key(entry);
+    const google_protobuf_Struct* filter_metadata_val =
+        envoy_config_core_v3_Metadata_FilterMetadataEntry_value(entry);
     absl::string_view key = UpbStringToAbsl(filter_metadata_key_view);
     auto json = ParseProtobufStructToJson(context, filter_metadata_val);
     if (!json.ok()) {
